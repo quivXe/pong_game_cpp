@@ -30,8 +30,6 @@ void updateGame();
 
 int main()
 {
-    sf::Vector2f temp(sf::Vector2f(5.5, 10.5) - sf::Vector2f(1.5, 5.5));
-    std::cout << temp.x << ' ' << temp.y;
     std::srand(time(NULL)); // SET SEED FOR RNG
 
     // PREPARATION

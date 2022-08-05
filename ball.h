@@ -10,9 +10,9 @@ class Ball
     float posx, posy, velX, velY;
     const float r = 10;
     const Color color = Color(255, 0, 126);
-    const float speed = 10;
+    const float speed = 8;
 
-    float getVel2FromPrimedVel1(float vel1) { return 1 - pow(abs(vel1), 2); }
+    float getVel2FromPrimedVel1(float vel1) { return 1 - pow(vel1, 2); }
     Vector2f distanceFromPaddle(Paddle paddle) { return paddle.getPos() - getPos(); }
 
     void set_random_vel()
@@ -38,23 +38,61 @@ class Ball
         if ( getPos().y - r < 0 || getPos().y + r > WINDOW_HEIGHT ) { velY *= -1; }
 
         // BOUNCING OFF THE PADDLES
-        if ((getPos().x - r <= leftPlayer.paddle.getPos().x + leftPlayer.paddle.width/2) &&
-            (getPos().x - r >= leftPlayer.paddle.getPos().x + leftPlayer.paddle.width/2 - speed - 1) &&
-            (getPos().y + r >= leftPlayer.paddle.getPos().y - leftPlayer.paddle.height/2) &&
-            (getPos().y - r <= leftPlayer.paddle.getPos().y + leftPlayer.paddle.height/2))
+        Vector2f distanceLeftPaddle = distanceFromPaddle(leftPlayer.paddle);
+        if (velX < 0) {
+            if ((abs(distanceLeftPaddle.x) <= leftPlayer.paddle.width/2 + r) &&
+            (abs(distanceLeftPaddle.y) <= leftPlayer.paddle.height/2 + r))
             {
-                velX *= -1;
+                if (getPos().x > leftPlayer.paddle.getPos().x &&
+                    (leftPlayer.paddle.width/2 + r) - abs(distanceLeftPaddle.x) < ((leftPlayer.paddle.height/2 + r) - abs(distanceLeftPaddle.y))) {
+                    velY = distanceLeftPaddle.y / (leftPlayer.paddle.height/2) * -1;
+
+                    // sometimes there is a bug and velY is over 1 for some reason :p
+                    if (velY > 0.9) { velY =  0.9; }
+                    else if (velY < -0.9) { velY = -0.9; }
+
+                    if (velX < 0){
+                        velX = sqrt(getVel2FromPrimedVel1(velY));
+                    }
+                    else{
+                        velX = sqrt(getVel2FromPrimedVel1(velY));
+                        velX *= -1;
+                    };
+                }
+                else{
+                    velY *= -1;
+                }
+
 
             }
-        if ((getPos().x + r >= rightPlayer.paddle.getPos().x - rightPlayer.paddle.width/2) &&
-            (getPos().x + r <= rightPlayer.paddle.getPos().x - rightPlayer.paddle.width/2 + speed + 1) &&
-            (getPos().y + r >= rightPlayer.paddle.getPos().y - rightPlayer.paddle.height/2) &&
-            (getPos().y - r <= rightPlayer.paddle.getPos().y + rightPlayer.paddle.height/2))
+        }
+        else {
+            Vector2f distanceRightPaddle = distanceFromPaddle(rightPlayer.paddle);
+            if ((abs(distanceRightPaddle.x) <= rightPlayer.paddle.width/2 + r) &&
+            (abs(distanceRightPaddle.y) <= rightPlayer.paddle.height/2 + r))
             {
-                velX *= -1;
-                return;
+                if (getPos().x < rightPlayer.paddle.getPos().x &&
+                    (rightPlayer.paddle.width/2 + r) - abs(distanceRightPaddle.x) < ((rightPlayer.paddle.height/2 + r) - abs(distanceRightPaddle.y))) {
+                    velY = distanceRightPaddle.y / (rightPlayer.paddle.height/2) * -1;
 
+                    // sometimes there is a bug and velY is over 1 for some reason :p
+                    if (velY > 0.9) { velY =  0.9; }
+                    else if (velY < -0.9) { velY = -0.9; }
+
+                    if (velX < 0){
+                        velX = sqrt(getVel2FromPrimedVel1(velY));
+                    }
+                    else{
+                        velX = sqrt(getVel2FromPrimedVel1(velY));
+                        velX *= -1;
+                    };
+                }
+                else{
+                    velY *= -1;
+                }
             }
+        }
+
 
         // OFF SCREEN
         if (getPos().x + r < 0)

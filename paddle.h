@@ -13,10 +13,10 @@ class Paddle
 private:
     float posx, posy;
     const Color color = Color(122, 0, 255);
-    const float speed = 6;
+    const float speed = 7;
 
 public:
-    const float width = 25, height = 200;
+    const float width = 25, height = 150;
 
     RectangleShape shapeObject;
     Paddle(float x, float y)
